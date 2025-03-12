@@ -401,79 +401,93 @@ class InputHandler:
         self.panning = False
 
     def processEvents(self):
+        ctrlHeld = pygame.key.get_mods() & pygame.KMOD_CTRL
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
-            ctrlHeld = pygame.key.get_mods() & pygame.KMOD_CTRL
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4 or event.button == 132: 
-                    if ctrlHeld:
-                        self.camera.targetScale *= 1.5
-                    else:
-                        self.camera.targetScale *= 1.1
-                elif event.button == 5 or event.button == 133:
-                    if ctrlHeld:
-                        self.camera.targetScale /= 1.5
-                    else:
-                        self.camera.targetScale /= 1.1
-                elif event.button == 3:
-                    self.panning = True
-
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.handleMouseButtonDown(event, ctrlHeld)
             elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 3:
-                    self.panning = False
-
+                self.handleMouseButtonUp(event)
             elif event.type == pygame.MOUSEMOTION:
-                if self.panning:
-                    delta = vec2(event.rel[0], event.rel[1]) / self.camera.scale
-                    self.camera.offset = self.camera.offset - delta
-
+                self.handleMouseMotion(event)
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    self.camera.cameraFollowIndex = (self.camera.cameraFollowIndex + 1) % len(self.simulation.bodies)
-                    self.camera.offset = vec2(0, 0)
-                elif event.key == pygame.K_LEFT:
-                    self.camera.cameraFollowIndex = (self.camera.cameraFollowIndex - 1) % len(self.simulation.bodies)
-                    self.camera.offset = vec2(0, 0)
-
-                elif event.key == pygame.K_c:
-                    self.camera.offset = vec2(0, 0)
-                elif event.key == pygame.K_t:
-                    self.simulation.timeStepIndex = (self.simulation.timeStepIndex + 1) % len(self.simulation.timeStepOptions)
-                    self.simulation.timeStep = self.simulation.timeStepOptions[self.simulation.timeStepIndex]
-                elif event.key == pygame.K_z:
-                    self.renderer.doArrows = not self.renderer.doArrows
-                elif event.key == pygame.K_x:
-                    self.renderer.doRelativeArrows = not self.renderer.doRelativeArrows
-                elif event.key == pygame.K_f:
-                    self.camera.zoomToFill()
-                elif event.key == pygame.K_o:
-                    self.renderer.doOrbitLines = not self.renderer.doOrbitLines 
-                    self.simulation.clearOrbitPoints()
-                elif event.key == pygame.K_p:
-                    self.simulation.clearOrbitPoints()
-                elif event.key == pygame.K_r:
+                if not self.handleKeyDown(event):
                     return False
 
-            if pygame.key.get_pressed()[pygame.K_EQUALS]:
-                self.camera.targetScale *= 1.1
-
-            elif pygame.key.get_pressed()[pygame.K_MINUS]:
-                self.camera.targetScale /= 1.1
-
-            elif pygame.key.get_pressed()[pygame.K_w]:
-                        self.renderer.maxArrowLength += 5
-            elif pygame.key.get_pressed()[pygame.K_s]:
-                    self.renderer.maxArrowLength -= 5
-                    if self.renderer.maxArrowLength < 5:
-                        self.renderer.maxArrowLength = 5
-
-            elif pygame.key.get_pressed()[pygame.K_q]:
-                self.simulation.bodies[self.camera.cameraFollowIndex].mass /= 1.2
-            elif pygame.key.get_pressed()[pygame.K_e]:
-                self.simulation.bodies[self.camera.cameraFollowIndex].mass *= 1.2
-
+        keys = pygame.key.get_pressed()
+        self.handleContinuousKeys(keys)
         return True
+    
+    def handleMouseButtonDown(self, event, ctrlHeld):
+        if event.button == 4 or event.button == 132: 
+            if ctrlHeld:
+                self.camera.targetScale *= 1.5
+            else:
+                self.camera.targetScale *= 1.1
+        elif event.button == 5 or event.button == 133:
+            if ctrlHeld:
+                self.camera.targetScale /= 1.5
+            else:
+                self.camera.targetScale /= 1.1
+        elif event.button == 3:
+            self.panning = True
+
+    def handleMouseButtonUp(self,event):
+        if event.button == 3:
+            self.panning = False
+
+    def handleMouseMotion(self, event):     
+        if self.panning:
+            delta = vec2(event.rel[0], event.rel[1]) / self.camera.scale
+            self.camera.offset = self.camera.offset - delta
+
+    def handleKeyDown(self, event):
+        if event.key == pygame.K_RIGHT:
+            self.camera.cameraFollowIndex = (self.camera.cameraFollowIndex + 1) % len(self.simulation.bodies)
+            self.camera.offset = vec2(0, 0)
+        elif event.key == pygame.K_LEFT:
+            self.camera.cameraFollowIndex = (self.camera.cameraFollowIndex - 1) % len(self.simulation.bodies)
+            self.camera.offset = vec2(0, 0)
+
+        elif event.key == pygame.K_c:
+            self.camera.offset = vec2(0, 0)
+        elif event.key == pygame.K_t:
+            self.simulation.timeStepIndex = (self.simulation.timeStepIndex + 1) % len(self.simulation.timeStepOptions)
+            self.simulation.timeStep = self.simulation.timeStepOptions[self.simulation.timeStepIndex]
+        elif event.key == pygame.K_z:
+            self.renderer.doArrows = not self.renderer.doArrows
+        elif event.key == pygame.K_x:
+            self.renderer.doRelativeArrows = not self.renderer.doRelativeArrows
+        elif event.key == pygame.K_f:
+            self.camera.zoomToFill()
+            self.camera.offset = vec2(0, 0)
+        elif event.key == pygame.K_o:
+            self.renderer.doOrbitLines = not self.renderer.doOrbitLines 
+            self.simulation.clearOrbitPoints()
+        elif event.key == pygame.K_p:
+            self.simulation.clearOrbitPoints()
+        elif event.key == pygame.K_r:
+            return False
+        return True
+
+    def handleContinuousKeys(self, keys):
+        if keys[pygame.K_EQUALS]:
+            self.camera.targetScale *= 1.1
+        elif keys[pygame.K_MINUS]:
+            self.camera.targetScale /= 1.1
+        elif keys[pygame.K_w]:
+                    self.renderer.maxArrowLength += 5
+        elif keys[pygame.K_s]:
+                self.renderer.maxArrowLength -= 5
+                if self.renderer.maxArrowLength < 5:
+                    self.renderer.maxArrowLength = 5
+        elif keys[pygame.K_q]:
+            self.simulation.bodies[self.camera.cameraFollowIndex].mass /= 1.2
+        elif keys[pygame.K_e]:
+            self.simulation.bodies[self.camera.cameraFollowIndex].mass *= 1.2
+
 
 def calculateGravitationalForce(body1, body2, G):
     direction = body2.position - body1.position
@@ -540,7 +554,9 @@ def main(resolution):
         sim.step(frameTime)
         renderer.render()
         pygame.display.flip()
+
         print(f"FPS: {clock.get_fps():.2f}")
+
     pygame.quit()
 
 clear()
