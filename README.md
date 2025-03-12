@@ -1,20 +1,14 @@
-# Project Name
+# PLanetary Simulation
 
-A brief description of what your project does and who it's for.
+Python-based simulation of to-scale planetary orbits using the Pygame library. It uses basic Newtonian physics to calculate orbits and gravitational pull 
 
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Credits](#credits)
 
 ## Installation
-
-### Prerequisites
-- List any prerequisites, e.g., Node.js, Python, etc.
 
 ### Steps
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yourusername/yourproject.git
+   git clone https://github.com/Planetary_Simulation.git
