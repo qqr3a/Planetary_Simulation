@@ -473,7 +473,6 @@ class InputHandler:
             elif pygame.key.get_pressed()[pygame.K_e]:
                 self.simulation.bodies[self.camera.cameraFollowIndex].mass *= 1.2
 
-
         return True
 
 def calculateGravitationalForce(body1, body2, G):
