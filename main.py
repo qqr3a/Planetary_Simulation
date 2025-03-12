@@ -122,7 +122,7 @@ class Body:
     
 class Simulation:
     def __init__(self, timeStepIndex, G):
-        self.timeStepOptions = [1/60, 1, 60, 24 * 60, 30.4 * 24 * 60] #, 24 * 60 * 365
+        self.timeStepOptions = [1, 60, 60 * 60, 24 * 60 * 60, 30.4 * 24 * 60 * 60] #, 24 * 60 * 365 *60
         self.timeStepIndex = timeStepIndex
         self.timeStep = self.timeStepOptions[timeStepIndex]
         self.G = G
@@ -147,7 +147,7 @@ class Simulation:
             self.bodies[i].velocity = calculateOrbitalVelocity(self.bodies[0], self.bodies[i], self.G)
         self.bodies[4].velocity += calculateOrbitalVelocity(self.bodies[3], self.bodies[4], self.G)
 
-    def step(self):
+    def step(self, deltaTime):
         bodyCount = len(self.bodies)
         for i in range(bodyCount):
             for j in range(i + 1, bodyCount):
@@ -156,7 +156,7 @@ class Simulation:
                 self.bodies[j].applyForce(-force)
 
         for body in self.bodies:
-            body.update(self.timeStep)
+            body.update(self.timeStep * deltaTime)
 
         i = 0
         while i < len(self.bodies):
@@ -169,7 +169,7 @@ class Simulation:
                 j += 1
             i += 1
 
-        self.elapsedTime += self.timeStep
+        self.elapsedTime += self.timeStep * deltaTime
     
     def clearOrbitPoints(self):
         for body in self.bodies:
@@ -535,11 +535,11 @@ def main(resolution):
 
     running = True
     while running:
+        frameTime = clock.tick(frameRate) / 1000
         running = inputHandler.processEvents()
-        sim.step()
+        sim.step(frameTime)
         renderer.render()
         pygame.display.flip()
-        clock.tick(frameRate)
         print(f"FPS: {clock.get_fps():.2f}")
     pygame.quit()
 
