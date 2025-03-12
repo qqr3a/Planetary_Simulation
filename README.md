@@ -1,6 +1,6 @@
 # PLanetary Simulation
 
-Python-based simulation of to-scale planetary orbits using the Pygame library. It uses basic Newtonian physics to calculate orbits and gravitational pull 
+A Python-based simulation of realistically scaled planetary orbits using the Pygame library. It applies Newtonian physics to simulate gravitational interactions and planetary motion.
 
 ## Table of Contents
 - [Installation](#installation)
