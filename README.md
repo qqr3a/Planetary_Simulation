@@ -1,4 +1,4 @@
-# PLanetary Simulation
+# Planetary Simulation
 
 A Python-based simulation of realistically scaled planetary orbits using the Pygame library. It applies Newtonian physics to simulate gravitational interactions and planetary motion.
 
