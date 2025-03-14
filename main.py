@@ -24,34 +24,34 @@ GREY = (21, 21, 21)
 SECONDS_PER_DAY = 24 * 60 * 60        
 SECONDS_PER_YEAR = 365 * SECONDS_PER_DAY  
 
-class vec2:
+class Vector2D:
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
     def __repr__(self):
-        return f"vec2({self.x}, {self.y})"
+        return f"Vector2D({self.x}, {self.y})"
 
     def __add__(self, other):
-        return vec2(self.x + other.x, self.y + other.y)
+        return Vector2D(self.x + other.x, self.y + other.y)
     
     def __sub__(self, other):
-        return vec2(self.x - other.x, self.y - other.y)
+        return Vector2D(self.x - other.x, self.y - other.y)
     
     def __mul__(self, scalar):
-        return vec2(self.x * scalar, self.y * scalar)
+        return Vector2D(self.x * scalar, self.y * scalar)
 
     def __truediv__(self, other):
-        return vec2(self.x / other, self.y / other)
+        return Vector2D(self.x / other, self.y / other)
     
     def __neg__(self):
-        return vec2(-self.x, -self.y)
+        return Vector2D(-self.x, -self.y)
 
     def tuple(self):
         return (self.x, self.y)
     
     def castInt(self):
-        return vec2(int(self.x), int(self.y))
+        return Vector2D(int(self.x), int(self.y))
 
     def magnitude(self): 
         return (self.x**2 + self.y**2) ** 0.5
@@ -62,15 +62,15 @@ class vec2:
     def normalise(self): 
         mag = self.magnitude()
         if mag == 0:
-            return vec2(0, 0)
-        return vec2(self.x / mag, self.y / mag)
+            return Vector2D(0, 0)
+        return Vector2D(self.x / mag, self.y / mag)
 
 class Body:
     def __init__(self, position, mass, bodyRadius, colour, bodyName):
-        self.position = vec2(position, 0)
+        self.position = Vector2D(position, 0)
         self.mass = mass
-        self.velocity = vec2(0, 0)
-        self.acceleration = vec2(0, 0)
+        self.velocity = Vector2D(0, 0)
+        self.acceleration = Vector2D(0, 0)
         
         self.colour = colour
         self.bodyRadius = int(bodyRadius)
@@ -85,7 +85,7 @@ class Body:
         self.velocity += self.acceleration * deltaTime
         self.position += self.velocity * deltaTime
         self.lastAcceleration = self.acceleration
-        self.acceleration = vec2(0, 0)
+        self.acceleration = Vector2D(0, 0)
 
     def getHitbox(self):
         position = self.position
@@ -129,6 +129,7 @@ class Simulation:
         self.elapsedTime = 0
         self.bodies = []
         self.initBodies()
+        self.bodyAmount = len(self.bodies)
 
     def initBodies(self):
         self.bodies = [
@@ -159,14 +160,13 @@ class Simulation:
             body.update(self.timeStep * deltaTime)
 
         i = 0
-        while i < len(self.bodies):
-            j = i + 1
-            while j < len(self.bodies):
+        while i < self.bodyAmount:
+            for j in range(i+1, self.bodyAmount, 1):
                 if checkCollision(self.bodies[i], self.bodies[j]):
                     self.combineBodies(self.bodies[i], self.bodies[j])
-                    i = -1 
+                    self.bodyAmount = len(self.bodies)
+                    i = -1
                     break
-                j += 1
             i += 1
 
         self.elapsedTime += self.timeStep * deltaTime
@@ -195,17 +195,17 @@ class Camera:
         self.scale = 3e-10
         self.zoomSmoothing = 0.1
         self.followZooming = 0.2
-        self.positon = vec2(0, 0)
-        self.offset = vec2(0, 0)
+        self.positon = Vector2D(0, 0)
+        self.offset = Vector2D(0, 0)
         self.resolution = resolution
         self.targetScale = self.scale
-        self.displayCenter = vec2(resolution.x / 2, resolution.y / 2)
+        self.displayCenter = Vector2D(resolution.x / 2, resolution.y / 2)
         self.cameraFollowIndex = 0
         self.lastCameraFollowIndex = 0
         self.targetPixelRadius = 9
 
     def getCameraCenter(self):
-        return vec2(self.displayCenter.x / self.scale, self.displayCenter.y / self.scale)
+        return Vector2D(self.displayCenter.x / self.scale, self.displayCenter.y / self.scale)
 
     def zoomToFill(self):
         targetRadius = self.simulation.bodies[self.cameraFollowIndex].bodyRadius
@@ -374,8 +374,7 @@ class Renderer:
         angle = math.atan2(direction.y, direction.x)
         
         leftAngle = angle + math.pi / 6
-        rightAngle = angle - math.pi / 6
-        
+        rightAngle = angle - math.pi / 6  
         leftPoint = (position.x - arrowSize * math.cos(leftAngle), position.y - arrowSize * math.sin(leftAngle))
         rightPoint = (position.x - arrowSize * math.cos(rightAngle), position.y - arrowSize * math.sin(rightAngle))
         
@@ -440,19 +439,18 @@ class InputHandler:
 
     def handleMouseMotion(self, event):     
         if self.panning:
-            delta = vec2(event.rel[0], event.rel[1]) / self.camera.scale
+            delta = Vector2D(event.rel[0], event.rel[1]) / self.camera.scale
             self.camera.offset = self.camera.offset - delta
 
     def handleKeyDown(self, event):
         if event.key == pygame.K_RIGHT:
             self.camera.cameraFollowIndex = (self.camera.cameraFollowIndex + 1) % len(self.simulation.bodies)
-            self.camera.offset = vec2(0, 0)
+            self.camera.offset = Vector2D(0, 0)
         elif event.key == pygame.K_LEFT:
             self.camera.cameraFollowIndex = (self.camera.cameraFollowIndex - 1) % len(self.simulation.bodies)
-            self.camera.offset = vec2(0, 0)
-
+            self.camera.offset = Vector2D(0, 0)
         elif event.key == pygame.K_c:
-            self.camera.offset = vec2(0, 0)
+            self.camera.offset = Vector2D(0, 0)
         elif event.key == pygame.K_t:
             self.simulation.timeStepIndex = (self.simulation.timeStepIndex + 1) % len(self.simulation.timeStepOptions)
             self.simulation.timeStep = self.simulation.timeStepOptions[self.simulation.timeStepIndex]
@@ -462,7 +460,7 @@ class InputHandler:
             self.renderer.doRelativeArrows = not self.renderer.doRelativeArrows
         elif event.key == pygame.K_f:
             self.camera.zoomToFill()
-            self.camera.offset = vec2(0, 0)
+            self.camera.offset = Vector2D(0, 0)
         elif event.key == pygame.K_o:
             self.renderer.doOrbitLines = not self.renderer.doOrbitLines 
             self.simulation.clearOrbitPoints()
@@ -488,12 +486,11 @@ class InputHandler:
         elif keys[pygame.K_e]:
             self.simulation.bodies[self.camera.cameraFollowIndex].mass *= 1.2
 
-
 def calculateGravitationalForce(body1, body2, G):
     direction = body2.position - body1.position
     distanceSquared = direction.squaredMagnitude()
     if distanceSquared == 0:
-        return vec2(0, 0)
+        return Vector2D(0, 0)
     forceMagnitude = (G * body1.mass * body2.mass) / distanceSquared
     forceDirection = direction / (distanceSquared) ** 0.5
     return forceDirection * forceMagnitude
@@ -502,9 +499,9 @@ def calculateOrbitalVelocity(center, body, G):
     direction = body.position - center.position
     distance = (direction.x ** 2 + direction.y ** 2) ** 0.5
     if distance == 0:
-        return vec2(0, 0)
+        return Vector2D(0, 0)
     velocityMagnitude = (G * center.mass / distance) ** 0.5
-    velocityDirection = vec2(-direction.y, direction.x) / distance
+    velocityDirection = Vector2D(-direction.y, direction.x) / distance
     return velocityDirection * velocityMagnitude
 
 def checkCollision(body1, body2):
@@ -513,7 +510,6 @@ def checkCollision(body1, body2):
     collisionDistance = (body1.bodyRadius + body2.bodyRadius)**2
     return distanceSquared <= collisionDistance
 
-
 def calcPixelRoundedLength(maxLength, scale, unitScaler):
     maxLength = 200
     realLength = (maxLength / scale) / unitScaler
@@ -521,13 +517,13 @@ def calcPixelRoundedLength(maxLength, scale, unitScaler):
     return  round(realLength / magnitude) * magnitude 
 
 def chooseResolution():
-    resolutionOptions = [vec2(1280, 720), vec2(1920, 1080), vec2(2560, 1440), vec2(3840, 2160)]
+    resolutionOptions = [Vector2D(1280, 720), Vector2D(1920, 1080), Vector2D(2560, 1440), Vector2D(3840, 2160)]
     print("Select Resolution (1, 2, etc.)\nPress enter for default")
     for i in range(len(resolutionOptions)):
         print(f"[{i+1}] {resolutionOptions[i]}")
     selection = input()
     if selection == "":
-        return vec2(1920, 1000) 
+        return Vector2D(1920, 1000) 
     else:
         selection = int(selection)
         return resolutionOptions[selection - 1]
