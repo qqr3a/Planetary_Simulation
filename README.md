@@ -12,3 +12,7 @@ A Python-based simulation of realistically scaled planetary orbits using the Pyg
 1. Clone the repo:
    ```bash
    git clone https://github.com/qqr3a/Planetary_Simulation.git
+
+## Usage
+
+Keybinds are present in info menu
