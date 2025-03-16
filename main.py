@@ -66,8 +66,8 @@ class Vector2D:
         return Vector2D(self.x / mag, self.y / mag)
 
 class Body:
-    def __init__(self, position, mass, bodyRadius, colour, bodyName):
-        self.position = Vector2D(position, 0)
+    def __init__(self, distance, mass, bodyRadius, colour, bodyName):
+        self.position = Vector2D(distance, 0)
         self.mass = mass
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
@@ -86,10 +86,6 @@ class Body:
         self.position += self.velocity * deltaTime
         self.lastAcceleration = self.acceleration
         self.acceleration = Vector2D(0, 0)
-
-    def getHitbox(self):
-        position = self.position
-        return pygame.Rect(position.x - self.bodyRadius, position.y - self.bodyRadius, self.bodyRadius * 2, self.bodyRadius * 2)
     
     def combineColour(self, other):
         red = ((self.colour[0] + other.colour[0])) // 2
@@ -181,8 +177,9 @@ class Simulation:
         newVelocity = (body1.velocity * body1.mass + body2.velocity * body2.mass) / combinedMass
         newRadius = int((body1.bodyRadius + body2.bodyRadius) // 2)
         newColour = body1.combineColour(body2)
-        newName = body1.bodyName + body2.bodyName
-        newBody = Body(newPosition, combinedMass, newRadius, newColour, newName)
+        newName = f"{body1.bodyName}-{body2.bodyName}"
+        newBody = Body(0, combinedMass, newRadius, newColour, newName)
+        newBody.position = newPosition
         newBody.velocity = newVelocity
 
         self.bodies.remove(body1)
@@ -195,7 +192,7 @@ class Camera:
         self.scale = 3e-10
         self.zoomSmoothing = 0.1
         self.followZooming = 0.2
-        self.positon = Vector2D(0, 0)
+        self.position = Vector2D(0, 0)
         self.offset = Vector2D(0, 0)
         self.resolution = resolution
         self.targetScale = self.scale
@@ -225,13 +222,13 @@ class Camera:
         desiredPosition = self.getCameraCenter() - self.offset - targetPosition
 
         if self.lastCameraFollowIndex != self.cameraFollowIndex:
-            self.positon += (desiredPosition - self.positon) * self.followZooming
-            if (desiredPosition - self.positon).magnitude() < 9e9:
-                self.positon = desiredPosition
+            self.position += (desiredPosition - self.position) * self.followZooming
+            if (desiredPosition - self.position).magnitude() < 9e9:
+                self.position = desiredPosition
                 self.lastCameraFollowIndex = self.cameraFollowIndex
             return
 
-        self.positon = desiredPosition
+        self.position = desiredPosition
 
 class Renderer:
     def __init__(self, simulation, camera, screen, resolution, font):
@@ -252,7 +249,7 @@ class Renderer:
         maxVelocity = max(body.velocity.magnitude() for body in self.simulation.bodies) if self.simulation.bodies else 1
         for body in self.simulation.bodies:
             if self.doOrbitLines:
-               body.drawOrbitLines(self.screen, self.camera.positon, self.camera.scale)
+               body.drawOrbitLines(self.screen, self.camera.position, self.camera.scale)
 
             self.drawBody(body)
 
@@ -265,7 +262,7 @@ class Renderer:
         self.drawDebugText()
     
     def drawBody(self, body):
-        position = (body.position + self.camera.positon) * self.camera.scale
+        position = (body.position + self.camera.position) * self.camera.scale
         radius = max(int(body.bodyRadius * self.camera.scale), 1)
         pygame.draw.circle(self.screen, body.colour, position.castInt().tuple(), radius)
 
@@ -348,7 +345,7 @@ class Renderer:
             relativeVelocity = body.velocity
             relativeAcceleration  = body.lastAcceleration
 
-        position = (body.position + self.camera.positon) * self.camera.scale
+        position = (body.position + self.camera.position) * self.camera.scale
         if relativeVelocity.magnitude() > 0:
             #displayArrowLength = maxArrowLength * math.log(1 + relativeVelocity.magnitude()) / math.log(1 + referenceVelocityArrow)
             scaledArrowLength = self.maxArrowLength * (math.sqrt(relativeVelocity.magnitude()) / math.sqrt(referenceVelocityArrow))
@@ -505,10 +502,9 @@ def calculateOrbitalVelocity(center, body, G):
     return velocityDirection * velocityMagnitude
 
 def checkCollision(body1, body2):
-    direction = body2.position - body1.position
-    distanceSquared = direction.x**2 + direction.y**2
-    collisionDistance = (body1.bodyRadius + body2.bodyRadius)**2
-    return distanceSquared <= collisionDistance
+    distanceSquared = (body2.position - body1.position).squaredMagnitude()
+    collisionDistance = (body1.bodyRadius + body2.bodyRadius)
+    return distanceSquared <= collisionDistance**2
 
 def calcPixelRoundedLength(maxLength, scale, unitScaler):
     maxLength = 200
