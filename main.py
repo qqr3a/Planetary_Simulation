@@ -254,7 +254,7 @@ class Renderer:
             self.drawBody(body)
 
             if self.doArrows and self.doRelativeArrows:
-                self.drawArrows(body, 1/self.simulation.bodies[self.camera.cameraFollowIndex].velocity.magnitude(), self.simulation.bodies[self.camera.cameraFollowIndex])    
+                self.drawArrows(body, self.simulation.bodies[self.camera.cameraFollowIndex].velocity.magnitude(), self.simulation.bodies[self.camera.cameraFollowIndex])    
             elif self.doArrows:
                 self.drawArrows(body, maxVelocity)
 
@@ -349,7 +349,7 @@ class Renderer:
         if relativeVelocity.magnitude() > 0:
             #displayArrowLength = maxArrowLength * math.log(1 + relativeVelocity.magnitude()) / math.log(1 + referenceVelocityArrow)
             scaledArrowLength = self.maxArrowLength * (math.sqrt(relativeVelocity.magnitude()) / math.sqrt(referenceVelocityArrow))
-            displayArrowLength = max(self.maxArrowLength * 0.05, min(scaledArrowLength, self.maxArrowLength)) 
+            displayArrowLength = max(self.maxArrowLength * 0.5, min(scaledArrowLength, self.maxArrowLength))             
 
         if relativeAcceleration.magnitude() > 0 :
             accelerationDirection = relativeAcceleration.normalise()
