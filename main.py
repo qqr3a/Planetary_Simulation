@@ -346,28 +346,25 @@ class Renderer:
             relativeAcceleration  = body.lastAcceleration
 
         position = (body.position + self.camera.position) * self.camera.scale
-        if relativeVelocity.magnitude() > 0:
-            #displayArrowLength = maxArrowLength * math.log(1 + relativeVelocity.magnitude()) / math.log(1 + referenceVelocityArrow)
-            scaledArrowLength = self.maxArrowLength * (math.sqrt(relativeVelocity.magnitude()) / math.sqrt(referenceVelocityArrow))
-            displayArrowLength = max(self.maxArrowLength * 0.5, min(scaledArrowLength, self.maxArrowLength))             
+        scaledArrowLength = self.maxArrowLength * (math.sqrt(relativeVelocity.magnitude()) / math.sqrt(referenceVelocityArrow))
+        #displayArrowLength = self.maxArrowLength * math.log(1 + relativeVelocity.magnitude()) / math.log(1 + referenceVelocityArrow)
+        displayArrowLength = max(self.maxArrowLength * 0.5, min(scaledArrowLength, self.maxArrowLength))             
+        arrowSize = max(4, int(displayArrowLength * 0.15))
 
-        if relativeAcceleration.magnitude() > 0 :
-            accelerationDirection = relativeAcceleration.normalise()
-            startAccelerationPosition = position.castInt()
-            endAccelertionPosition = (position + accelerationDirection * displayArrowLength).castInt()
-            
-            pygame.draw.line(self.screen, BLUE, startAccelerationPosition.tuple(), endAccelertionPosition.tuple(), 2)
-            self.drawArrowHead(accelerationDirection, endAccelertionPosition, BLUE)
+        accelerationDirection = relativeAcceleration.normalise()
+        startAccelerationPosition = position.castInt()
+        endAccelertionPosition = (position + accelerationDirection * displayArrowLength).castInt()            
+        pygame.draw.line(self.screen, BLUE, startAccelerationPosition.tuple(), endAccelertionPosition.tuple(), 2)
+        self.drawArrowHead(accelerationDirection, endAccelertionPosition, BLUE, arrowSize)
 
-        if relativeVelocity.magnitude() > 0:
-            velocityDirection = relativeVelocity.normalise()
-            startVelocityPosition = position.castInt()
-            endVelocityPosition = (position + velocityDirection * displayArrowLength).castInt()
-            pygame.draw.line(self.screen, RED, startVelocityPosition.tuple(), endVelocityPosition.tuple(), 2)
-            self.drawArrowHead(velocityDirection, endVelocityPosition, RED)
-        
+        velocityDirection = relativeVelocity.normalise()
+        startVelocityPosition = position.castInt()
+        endVelocityPosition = (position + velocityDirection * displayArrowLength).castInt()
+        pygame.draw.line(self.screen, RED, startVelocityPosition.tuple(), endVelocityPosition.tuple(), 2)
+        self.drawArrowHead(velocityDirection, endVelocityPosition, RED, arrowSize)
+    
 
-    def drawArrowHead(self, direction, position, colour, arrowSize = 8):
+    def drawArrowHead(self, direction, position, colour, arrowSize = 4):
         angle = math.atan2(direction.y, direction.x)
         
         leftAngle = angle + math.pi / 6
