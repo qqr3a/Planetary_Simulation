@@ -15,4 +15,8 @@ A Python-based simulation of realistically scaled planetary orbits using the Pyg
 
 ## Usage
 
+1. Run the simulation
+   ```bash
+   python path/to/planetarySimulation/main.py
+
 Keybinds are present in info menu
