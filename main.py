@@ -24,6 +24,8 @@ GREY = (21, 21, 21)
 SECONDS_PER_DAY = 24 * 60 * 60        
 SECONDS_PER_YEAR = 365 * SECONDS_PER_DAY  
 
+PI = 3.14159265359
+
 class Vector2D:
     def __init__(self, x, y):
         self.x = x
@@ -175,7 +177,7 @@ class Simulation:
         combinedMass = body1.mass + body2.mass
         newPosition = (body1.position * body1.mass + body2.position * body2.mass) / combinedMass
         newVelocity = (body1.velocity * body1.mass + body2.velocity * body2.mass) / combinedMass
-        newRadius = int((body1.bodyRadius + body2.bodyRadius) // 2)
+        newRadius = math.sqrt(body1.radius**2 + body2.radius**2)
         newColour = body1.combineColour(body2)
         newName = f"{body1.bodyName}-{body2.bodyName}"
         newBody = Body(0, combinedMass, newRadius, newColour, newName)
