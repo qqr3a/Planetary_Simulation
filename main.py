@@ -118,7 +118,7 @@ class Body:
     
 class Simulation:
     def __init__(self, timeStepIndex, G):
-        self.timeStepOptions = [1, 60, 60 * 60, 24 * 60 * 60, 30.4 * 24 * 60 * 60] #, 24 * 60 * 365 *60
+        self.timeStepOptions = [1, 60, 60 * 60, 24 * 60 * 60, 30.4 * 24 * 60 * 60]
         self.timeStepIndex = timeStepIndex
         self.timeStep = self.timeStepOptions[timeStepIndex]
         self.G = G
@@ -129,16 +129,16 @@ class Simulation:
 
     def initBodies(self):
         self.bodies = [
-            Body(0, 1.989e30, 696340000, YELLOW, "Sun"),
-            Body(57_910_000_000 , 3.301e23, 2439700  , LIGHTGREY, "Mercury"),
-            Body(108_210_000_000, 4.87e24 , 6050000  , BROWN, "Venus"),
-            Body(149_597_870_000, 5.972e24, 6371000  , BLUE, "Earth"),
-            Body(149_597_870_000 + 384_400_000, 7.348e22, 1737400, BROWN, "Moon"),
-            Body(227_900_000_000, 6.39e23 , 3389500 , RED, "Mars"),
-            Body(778_600_000_000, 1.898e27, 69911000, LIGHTGREY, "Jupiter"),
-            Body(1_439_200_000_000, 5.683e26, 58232000, RED, "Saturn"),
-            Body(4_471_300_000_000, 1.024e26, 24622000, BLUE, "Neptune"),
-            Body(2.9233e12, 8.681e25, 25362000, LIGHTBLUE, "Uranus"),
+            Body(0, 1.989e30, 6.9634e8, YELLOW, "Sun"),
+            Body(5.791e10, 3.301e23, 2.4397e6  , LIGHTGREY, "Mercury"),
+            Body(1.0821e11, 4.87e24 , 6.05e6  , BROWN, "Venus"),
+            Body(1.4959787e11, 5.972e24, 6.371e6  , BLUE, "Earth"),
+            Body(1.4959787e11 + 3.844e8, 7.348e22, 1.7374e6, BROWN, "Moon"),
+            Body(2.279e11, 6.39e23 , 3.3895e6 , RED, "Mars"),
+            Body(7.786e11, 1.898e27, 6.9911e7, LIGHTGREY, "Jupiter"),
+            Body(1.4392e12, 5.683e26, 5.8232e7, RED, "Saturn"),
+            Body(4.471e12, 1.024e26, 2.4622e7, BLUE, "Neptune"),
+            Body(2.9233e12, 8.681e25, 2.5362e7, LIGHTBLUE, "Uranus"),
         ]
         for i in range(1, len(self.bodies)):
             self.bodies[i].velocity = calculateOrbitalVelocity(self.bodies[0], self.bodies[i], self.G)
