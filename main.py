@@ -3,6 +3,9 @@ import os
 import time
 import math
 from collections import deque
+import cProfile
+import pstats
+import io
 
 def clear():
     if os.name == "nt": 
@@ -97,7 +100,6 @@ class Body:
         if not self.orbitPoints:
             self.orbitPoints.append(self.position)
             return
-
         lastPoint = self.orbitPoints[-1]
         if (self.position-lastPoint).squaredMagnitude() > self.orbitMinDistance:
             self.orbitPoints.append(self.position)
@@ -525,7 +527,7 @@ def chooseResolution():
         else:
             print("\nTry again")
      
-def main(resolution):
+def runSimulation(resolution):
     clear()
 
     pygame.init()
@@ -547,12 +549,26 @@ def main(resolution):
         sim.step(frameTime)
         renderer.render()
         pygame.display.flip()
-
-        print(f"FPS: {clock.get_fps():.2f}")
-
     pygame.quit()
 
-clear()
-res = chooseResolution()
-while True:
-    main(res)
+
+def main():
+    clear()
+    res = chooseResolution()
+    while True:
+        runSimulation(res)
+
+profile = cProfile.Profile()
+profile.enable()
+
+try:
+    main()
+except KeyboardInterrupt:
+    pass 
+
+profile.disable()
+s = io.StringIO()
+sortby = "cumulative"
+ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
+ps.print_stats(30)
+print(s.getvalue())
