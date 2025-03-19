@@ -24,8 +24,6 @@ GREY = (21, 21, 21)
 SECONDS_PER_DAY = 24 * 60 * 60        
 SECONDS_PER_YEAR = 365 * SECONDS_PER_DAY  
 
-PI = 3.14159265359
-
 class Vector2D:
     def __init__(self, x, y):
         self.x = x
@@ -365,7 +363,6 @@ class Renderer:
         pygame.draw.line(self.screen, RED, startVelocityPosition.tuple(), endVelocityPosition.tuple(), 2)
         self.drawArrowHead(velocityDirection, endVelocityPosition, RED, arrowSize)
     
-
     def drawArrowHead(self, direction, position, colour, arrowSize = 4):
         angle = math.atan2(direction.y, direction.x)
         
@@ -513,15 +510,20 @@ def calcPixelRoundedLength(maxLength, scale, unitScaler):
 
 def chooseResolution():
     resolutionOptions = [Vector2D(1280, 720), Vector2D(1920, 1080), Vector2D(2560, 1440), Vector2D(3840, 2160)]
-    print("Select Resolution (1, 2, etc.)\nPress enter for default")
-    for i in range(len(resolutionOptions)):
-        print(f"[{i+1}] {resolutionOptions[i]}")
-    selection = input()
-    if selection == "":
-        return Vector2D(1920, 1000) 
-    else:
-        selection = int(selection)
-        return resolutionOptions[selection - 1]
+    while True:
+        print("Select Resolution (1, 2, etc.)\nPress enter for default")
+        for i in range(len(resolutionOptions)):
+            print(f"[{i+1}] {resolutionOptions[i]}")
+        print()
+
+        selection = input()
+        if selection == "":
+            return Vector2D(1920, 1000)
+        if selection in ["1", "2", "3", "4"]: 
+            selection = int(selection)
+            return resolutionOptions[selection - 1]
+        else:
+            print("\nTry again")
      
 def main(resolution):
     clear()
