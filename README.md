@@ -23,12 +23,12 @@ A Python-based simulation of realistically scaled planetary orbits using the Pyg
 
 Keybinds are present in info menu
 
-## issues 
+## Issues 
 
 Crash at extreme velocity sizes relative to most massive body
 Crash when scale is lower sub-planet size
 
-## todo
+## Todo
 
 Elastic collisions
 Mid-simulation modify/add body
