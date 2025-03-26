@@ -31,7 +31,9 @@ Keybinds are present in info menu
 ## Todo
 
 •Elastic collisions
+
 •Mid-simulation modify/add body menu
+
 •Relative scaling of both velocity and acceleration arrows
 
 
