@@ -6,7 +6,7 @@ A Python-based simulation of realistically scaled planetary orbits using the Pyg
 - [Installation](#installation)
 - [Usage](#usage)
 - [Known Issues](#issues)
-- [To Do](#todo)
+- [To Do](#to-do)
 
 ## Installation
 
@@ -29,7 +29,7 @@ Keybinds are present in info menu
 
 •Crash when scale is lower sub-planet size
 
-## Todo
+## To-do
 
 •Elastic collisions
 
