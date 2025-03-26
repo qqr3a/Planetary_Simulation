@@ -5,8 +5,8 @@ A Python-based simulation of realistically scaled planetary orbits using the Pyg
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Known Issues] (#issues)
-- [To Do] (#todo)
+- [Known Issues](#issues)
+- [To Do](#todo)
 
 ## Installation
 
