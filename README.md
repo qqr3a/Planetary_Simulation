@@ -5,8 +5,8 @@ A Python-based simulation of realistically scaled planetary orbits using the Pyg
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Known Issues](#issues)
-- [To Do](#todo)
+- [Known Issues] (#issues)
+- [To Do] (#todo)
 
 ## Installation
 
@@ -25,13 +25,13 @@ Keybinds are present in info menu
 
 ## Issues 
 
-Crash at extreme velocity sizes relative to most massive body
-Crash when scale is lower sub-planet size
+•Crash at extreme velocity sizes relative to most massive body
+•Crash when scale is lower sub-planet size
 
 ## Todo
 
-Elastic collisions
-Mid-simulation modify/add body
-Relative scaling of both velocity and acceleration arrows
+•Elastic collisions
+•Mid-simulation modify/add body menu
+•Relative scaling of both velocity and acceleration arrows
 
 
