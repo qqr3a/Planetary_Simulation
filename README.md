@@ -26,6 +26,7 @@ Keybinds are present in info menu
 ## Issues 
 
 •Crash at extreme velocity sizes relative to most massive body
+
 •Crash when scale is lower sub-planet size
 
 ## Todo
